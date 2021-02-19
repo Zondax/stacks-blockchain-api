@@ -116,7 +116,7 @@ function makeSenderOperation(tx: BaseTx, index: number): RosettaOperation {
 function makeReceiverOperation(tx: BaseTx, index: number): RosettaOperation {
   const receiver: RosettaOperation = {
     operation_identifier: { index: index },
-    related_operations: [{ index: 0, operation_identifier: { index: 1 } }],
+    related_operations: [{ index: index - 1 }],
     type: getTxTypeString(tx.type_id),
     status: getTxStatus(tx.status),
     account: {
