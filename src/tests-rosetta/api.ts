@@ -1871,7 +1871,7 @@ describe('Rosetta API', () => {
     signer.signOrigin(createStacksPrivateKey(testnetKeys[0].secretKey));
     const signedSerializedTx = signer.transaction.serialize().toString('hex');
 
-    const signature: MessageSignature = getSignature(signer.transaction) as MessageSignature;
+    let signature = getSignature(signer.transaction) as MessageSignature;
 
     const request: RosettaConstructionCombineRequest = {
       network_identifier: {
@@ -1976,7 +1976,7 @@ describe('Rosetta API', () => {
         {
           signing_payload: {
             hex_bytes:
-              '0136212600bf7463399a23c398f29ca7006b9986b4a01129dd7c6e89314607208e516b0b28c1d850fe6e164abea7b6cceb4aa09700a6d218d1b605d4a402d3038f',
+              '36212600bf7463399a23c398f29ca7006b9986b4a01129dd7c6e89314607208e516b0b28c1d850fe6e164abea7b6cceb4aa09700a6d218d1b605d4a402d3038f01',
             signature_type: 'ecdsa',
           },
           public_key: {
@@ -1985,7 +1985,7 @@ describe('Rosetta API', () => {
           },
           signature_type: 'ecdsa',
           hex_bytes:
-            '0136212600bf7463399a23c398f29ca7006b9986b4a01129dd7c6e89314607208e516b0b28c1d850fe6e164abea7b6cceb4aa09700a6d218d1b605d4a402d3038f',
+            '36212600bf7463399a23c398f29ca7006b9986b4a01129dd7c6e89314607208e516b0b28c1d850fe6e164abea7b6cceb4aa09700a6d218d1b605d4a402d3038f01',
         },
       ],
     };
@@ -2106,7 +2106,7 @@ describe('Rosetta API', () => {
         {
           signing_payload: {
             hex_bytes:
-              '0136212600bf7463399a23c398f29ca7006b9986b4a01129dd7c6e89314607208e516b0b28c1d850fe6e164abea7b6cceb4aa09700a6d218d1b605d4a402d3038f',
+              '36212600bf7463399a23c398f29ca7006b9986b4a01129dd7c6e89314607208e516b0b28c1d850fe6e164abea7b6cceb4aa09700a6d218d1b605d4a402d3038f01',
             signature_type: 'ecdsa',
           },
           public_key: {
@@ -2115,7 +2115,7 @@ describe('Rosetta API', () => {
           },
           signature_type: 'ecdsa',
           hex_bytes:
-            '0136212600bf7463399a23c398f29ca7006b9986b4a01129dd7c6e89314607208e516b0b28c1d850fe6e164abea7b6cceb4aa09700a6d218d1b605d4a402d3038f',
+            '36212600bf7463399a23c398f29ca7006b9986b4a01129dd7c6e89314607208e516b0b28c1d850fe6e164abea7b6cceb4aa09700a6d218d1b605d4a402d3038f01',
         },
       ],
     };
