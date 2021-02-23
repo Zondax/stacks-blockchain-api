@@ -1872,7 +1872,7 @@ describe('Rosetta API', () => {
     signer.signOrigin(createStacksPrivateKey(testnetKeys[0].secretKey));
     const signedSerializedTx = signer.transaction.serialize().toString('hex');
 
-    let signature = getSignature(signer.transaction) as MessageSignature;
+    const signature: MessageSignature = getSignature(signer.transaction) as MessageSignature;
 
     const request: RosettaConstructionCombineRequest = {
       network_identifier: {
