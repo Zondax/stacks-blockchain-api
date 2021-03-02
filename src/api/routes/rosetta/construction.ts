@@ -522,6 +522,11 @@ export function createRosettaConstructionRouter(db: DataStore, chainId: ChainID)
       return;
     }
 
+    if (signatures[0].signature_type !== 'ecdsa_recovery') {
+      res.status(400).json(RosettaErrors.signatureTypeNotSupported);
+      return;
+    }
+
     let newSignature: MessageSignature;
 
     try {
