@@ -41,10 +41,14 @@ export interface ApiServer {
 }
 
 export async function startApiServer(datastore: DataStore, chainId: ChainID): Promise<ApiServer> {
+  logger.info('Staring api server');
+
   const app = addAsync(express());
 
   const apiHost = process.env['STACKS_BLOCKCHAIN_API_HOST'];
   const apiPort = parseInt(process.env['STACKS_BLOCKCHAIN_API_PORT'] ?? '');
+
+  logger.info(`Starting api server at ${apiHost}:${apiPort}`);
 
   if (!apiHost) {
     throw new Error(
