@@ -106,6 +106,7 @@ export function loadDotEnv(): void {
     return;
   }
   const dotenvConfig = dotenv.config();
+  console.log(dotenvConfig);
   if (dotenvConfig.error) {
     logError(`Error loading .env file: ${dotenvConfig.error}`, dotenvConfig.error);
     throw dotenvConfig.error;

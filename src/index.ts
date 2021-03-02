@@ -9,6 +9,8 @@ import * as WebSocket from 'ws';
 import { createServer as createPrometheusServer } from '@promster/server';
 import { ChainID } from '@stacks/transactions';
 
+console.log("WHAT IS HAPPENING HERE")
+
 loadDotEnv();
 
 async function monitorCoreRpcConnection(): Promise<void> {
@@ -53,6 +55,7 @@ async function init(): Promise<void> {
     }
     case 'pg':
     case undefined: {
+      logger.info(`Connect to pg db on port ${process.env['PG_HOST']}:${process.env['PG_PORT']}`);
       db = await PgDataStore.connect();
       break;
     }
@@ -63,6 +66,8 @@ async function init(): Promise<void> {
     }
   }
 
+  console.log('LOOKING FOR EVENT SERVER ')
+
   if (!('STACKS_CHAIN_ID' in process.env)) {
     const error = new Error(`Env var STACKS_CHAIN_ID is not set`);
     logError(error.message, error);
@@ -70,6 +75,7 @@ async function init(): Promise<void> {
   }
   const configuredChainID: ChainID = parseInt(process.env['STACKS_CHAIN_ID'] as string);
   await startEventServer({ db, chainId: configuredChainID });
+
   const networkChainId = await getCoreChainID();
   if (networkChainId !== configuredChainID) {
     const error = new Error(
