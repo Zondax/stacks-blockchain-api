@@ -34,7 +34,9 @@ async function monitorCoreRpcConnection(): Promise<void> {
 
 async function getCoreChainID(): Promise<ChainID> {
   const client = new StacksCoreRpcClient();
+  logger.info("Need to connect to RPC ?")
   await client.waitForConnection(Infinity);
+  logger.info("Wait for 'infinity'")
   const coreInfo = await client.getInfo();
   if (coreInfo.network_id === ChainID.Mainnet) {
     return ChainID.Mainnet;
@@ -81,6 +83,7 @@ async function init(): Promise<void> {
   logger.info('Configuring chainID');
   const networkChainId = await getCoreChainID();
   if (networkChainId !== configuredChainID) {
+    logger.info('Wrong chainID');
     const error = new Error(
       `The configured STACKS_CHAIN_ID does not match the node's: ${configuredChainID} vs ${networkChainId}`
     );
