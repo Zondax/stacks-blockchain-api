@@ -57,6 +57,8 @@ export async function startApiServer(datastore: DataStore, chainId: ChainID): Pr
     );
   }
 
+  logger.info(`Starting api server at ${apiHost}:${apiPort}`);
+
   // app.use(compression());
   // app.disable('x-powered-by');
 
@@ -66,6 +68,7 @@ export async function startApiServer(datastore: DataStore, chainId: ChainID): Pr
   }[] = [];
 
   if (isProdEnv) {
+    logger.info(`isProdEnv`);
     const promMiddleware = createPrometheusMiddleware({
       options: {
         normalizePath: path => {
@@ -87,6 +90,8 @@ export async function startApiServer(datastore: DataStore, chainId: ChainID): Pr
     });
     app.use(promMiddleware);
   }
+
+  logger.info(`Initiating routes`);
 
   // Setup request logging
   app.use(
