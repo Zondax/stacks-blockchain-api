@@ -73,9 +73,12 @@ async function init(): Promise<void> {
     logError(error.message, error);
     throw error;
   }
+
+  logger.info('Configuring Event Server');
   const configuredChainID: ChainID = parseInt(process.env['STACKS_CHAIN_ID'] as string);
   await startEventServer({ db, chainId: configuredChainID });
 
+  logger.info('Configuring chainID');
   const networkChainId = await getCoreChainID();
   if (networkChainId !== configuredChainID) {
     const error = new Error(
@@ -84,6 +87,8 @@ async function init(): Promise<void> {
     logError(error.message, error);
     throw error;
   }
+
+  logger.info('Monitor core RPC connection (?)');
   monitorCoreRpcConnection().catch(error => {
     logger.error(`Error monitoring RPC connection: ${error}`, error);
   });
