@@ -83,6 +83,7 @@ export class StacksCoreRpcClient {
     const retryInterval = 1000; // 1 second
     const timer = stopwatch();
     let lastError: Error;
+    logger.info("Trying to get info from blockstack rpc");
     do {
       try {
         const info = await this.getInfo();
@@ -101,6 +102,7 @@ export class StacksCoreRpcClient {
 
   async fetchJson<T>(path: string, init?: RequestInit): Promise<T> {
     const url = this.createUrl(path);
+    logger.info("Inside fetchJson function");
     const resultString = await this.fetchText(path, init);
     try {
       const resultJson = JSON.parse(resultString);
@@ -113,6 +115,7 @@ export class StacksCoreRpcClient {
 
   async fetchText(path: string, init?: RequestInit): Promise<string> {
     const url = this.createUrl(path);
+    logger.info("fetching....");
     const result = await fetch(url, init);
     if (!result.ok) {
       let msg = '';
@@ -120,6 +123,7 @@ export class StacksCoreRpcClient {
         msg = await result.text();
       } catch (error) {
         // ignore error
+        logger.info("We have an error but it is being ignored");
       }
       throw new Error(`Response ${result.status}: ${result.statusText} fetching ${url} - ${msg}`);
     }
@@ -133,6 +137,7 @@ export class StacksCoreRpcClient {
   }
 
   async getInfo(): Promise<CoreRpcInfo> {
+    logger.info("Calling v2/info'");
     const result = await this.fetchJson<CoreRpcInfo>('v2/info');
     return result;
   }
