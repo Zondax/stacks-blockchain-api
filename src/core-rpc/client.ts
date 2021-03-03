@@ -1,5 +1,5 @@
 import fetch, { RequestInit } from 'node-fetch';
-import { parsePort, stopwatch, logError, timeout } from '../helpers';
+import { parsePort, stopwatch, logger, logError, timeout } from '../helpers';
 
 export interface CoreRpcAccountInfo {
   /** Hex-prefixed uint128. */
@@ -86,6 +86,7 @@ export class StacksCoreRpcClient {
     do {
       try {
         const info = await this.getInfo();
+        logger.info(info);
         if (!info.stacks_tip_height || info.stacks_tip_height <= 0) {
           throw new Error(`stacks_tip_height not >= 1`);
         }
