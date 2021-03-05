@@ -51,7 +51,7 @@ import {
   RosettaOperation,
   RosettaTransaction,
 } from '@blockstack/stacks-blockchain-api-types';
-import { getRosettaNetworkName, RosettaConstants, RosettaErrors } from '../api/rosetta-constants';
+import { getRosettaNetworkName, RosettaConstants, RosettaErrors, RosettaErrorsTypes } from "../api/rosetta-constants";
 import { GetStacksTestnetNetwork, testnetKeys } from '../api/routes/debug';
 import { getOptionsFromOperations, getSignature } from '../rosetta-helpers';
 import { makeSigHashPreSign, MessageSignature } from '@stacks/transactions';
@@ -780,7 +780,7 @@ describe('Rosetta API', () => {
       .send(request2);
     expect(result2.status).toBe(400);
 
-    const expectedResponse2 = RosettaErrors.invalidCurveType;
+    const expectedResponse2 = RosettaErrors[RosettaErrorsTypes.invalidCurveType];
 
     expect(JSON.parse(result2.text)).toEqual(expectedResponse2);
 
@@ -800,7 +800,7 @@ describe('Rosetta API', () => {
       .send(request3);
     expect(result3.status).toBe(400);
 
-    const expectedResponse3 = RosettaErrors.invalidPublicKey;
+    const expectedResponse3 = RosettaErrors[RosettaErrorsTypes.invalidPublicKey];
 
     expect(JSON.parse(result3.text)).toEqual(expectedResponse3);
   });
@@ -1009,7 +1009,7 @@ describe('Rosetta API', () => {
       .send(request2);
     expect(result2.status).toBe(400);
 
-    const expectedResponse2 = RosettaErrors.invalidOperation;
+    const expectedResponse2 = RosettaErrors[RosettaErrorsTypes.invalidOperation];
 
     expect(JSON.parse(result2.text)).toEqual(expectedResponse2);
   });
@@ -1081,7 +1081,7 @@ describe('Rosetta API', () => {
     expect(result.status).toBe(400);
     expect(result.type).toBe('application/json');
 
-    expect(JSON.parse(result.text)).toEqual(RosettaErrors.invalidPublicKey);
+    expect(JSON.parse(result.text)).toEqual(RosettaErrors[RosettaErrorsTypes.invalidPublicKey]);
   });
 
   test('construction/metadata - empty network identifier', async () => {
@@ -1280,7 +1280,7 @@ describe('Rosetta API', () => {
     const result = await supertest(api.server).post(`/rosetta/v1/construction/hash`).send(request);
     expect(result.status).toBe(400);
 
-    const expectedResponse = RosettaErrors.invalidTransactionString;
+    const expectedResponse = RosettaErrors[RosettaErrorsTypes.invalidTransactionString];
 
     expect(JSON.parse(result.text)).toEqual(expectedResponse);
   });
@@ -1299,7 +1299,7 @@ describe('Rosetta API', () => {
     const result = await supertest(api.server).post(`/rosetta/v1/construction/hash`).send(request);
     expect(result.status).toBe(400);
 
-    const expectedResponse = RosettaErrors.transactionNotSigned;
+    const expectedResponse = RosettaErrors[RosettaErrorsTypes.transactionNotSigned];
 
     expect(JSON.parse(result.text)).toEqual(expectedResponse);
   });
@@ -1442,7 +1442,7 @@ describe('Rosetta API', () => {
       .post(`/rosetta/v1/construction/submit`)
       .send(request);
     expect(result.status).toBe(400);
-    const expectedResponse = RosettaErrors.invalidTransactionString;
+    const expectedResponse = RosettaErrors[RosettaErrorsTypes.invalidTransactionString];
 
     expect(JSON.parse(result.text)).toEqual(expectedResponse);
   });
@@ -1666,7 +1666,7 @@ describe('Rosetta API', () => {
     expect(result.status).toBe(400);
     expect(result.type).toBe('application/json');
 
-    const expectedResponse = RosettaErrors.needOnePublicKey;
+    const expectedResponse = RosettaErrors[RosettaErrorsTypes.needOnePublicKey];
 
     expect(JSON.parse(result.text)).toEqual(expectedResponse);
   });
@@ -1751,7 +1751,7 @@ describe('Rosetta API', () => {
     expect(result.status).toBe(400);
     expect(result.type).toBe('application/json');
 
-    const expectedResponse = RosettaErrors.emptyPublicKey;
+    const expectedResponse = RosettaErrors[RosettaErrorsTypes.emptyPublicKey];
 
     expect(JSON.parse(result.text)).toEqual(expectedResponse);
   });
@@ -1842,7 +1842,7 @@ describe('Rosetta API', () => {
     expect(result.status).toBe(400);
     expect(result.type).toBe('application/json');
 
-    const expectedResponse = RosettaErrors.invalidCurveType;
+    const expectedResponse = RosettaErrors[RosettaErrorsTypes.invalidCurveType];
 
     expect(JSON.parse(result.text)).toEqual(expectedResponse);
   });
@@ -1961,7 +1961,7 @@ describe('Rosetta API', () => {
     expect(result.status).toBe(400);
     expect(result.type).toBe('application/json');
 
-    const expectedResponse = RosettaErrors.needOnlyOneSignature;
+    const expectedResponse = RosettaErrors[RosettaErrorsTypes.needOnlyOneSignature];
 
     expect(JSON.parse(result.text)).toEqual(expectedResponse);
   });
@@ -1998,7 +1998,7 @@ describe('Rosetta API', () => {
     expect(result.status).toBe(400);
     expect(result.type).toBe('application/json');
 
-    const expectedResponse = RosettaErrors.invalidTransactionString;
+    const expectedResponse = RosettaErrors[RosettaErrorsTypes.invalidTransactionString];
 
     expect(JSON.parse(result.text)).toEqual(expectedResponse);
   });
@@ -2034,7 +2034,7 @@ describe('Rosetta API', () => {
     expect(result.status).toBe(400);
     expect(result.type).toBe('application/json');
 
-    const expectedResponse = RosettaErrors.invalidSignature;
+    const expectedResponse = RosettaErrors[RosettaErrorsTypes.invalidSignature];
 
     expect(JSON.parse(result.text)).toEqual(expectedResponse);
   });
@@ -2090,7 +2090,7 @@ describe('Rosetta API', () => {
     expect(result.status).toBe(400);
     expect(result.type).toBe('application/json');
 
-    const expectedResponse = RosettaErrors.signatureNotVerified;
+    const expectedResponse = RosettaErrors[RosettaErrorsTypes.signatureNotVerified];
 
     expect(JSON.parse(result.text)).toEqual(expectedResponse);
   });
@@ -2128,7 +2128,7 @@ describe('Rosetta API', () => {
     expect(result.status).toBe(400);
     expect(result.type).toBe('application/json');
 
-    const expectedResponse = RosettaErrors.signatureNotVerified;
+    const expectedResponse = RosettaErrors[RosettaErrorsTypes.signatureNotVerified];
 
     expect(JSON.parse(result.text)).toEqual(expectedResponse);
   });
