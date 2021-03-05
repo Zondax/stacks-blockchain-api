@@ -122,7 +122,6 @@ export function makeRosettaError(notValid: ValidSchema): RosettaError {
   // we've already identified the problem
   if (notValid.errorType !== undefined) {
     resp = RosettaErrors[notValid.errorType];
-    resp.details = { message: RosettaErrors[notValid.errorType].message };
   }
 
   const error = notValid.error || '';
