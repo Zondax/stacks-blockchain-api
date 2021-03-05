@@ -10,8 +10,9 @@ import {
   RosettaOperationStatuses,
   RosettaErrors,
   ReferenceNodes,
-  getRosettaNetworkName, RosettaErrorsTypes
-} from "../../rosetta-constants";
+  getRosettaNetworkName,
+  RosettaErrorsTypes,
+} from '../../rosetta-constants';
 const middleware_version = require('../../../../package.json').version;
 import {
   RosettaNetworkListResponse,
@@ -75,7 +76,6 @@ export function createRosettaNetworkRouter(db: DataStore, chainId: ChainID): Rou
       return { peer_id: peerId };
     });
 
-
     const currentTipHeight = block.result.block_identifier.index;
 
     const response: RosettaNetworkStatusResponse = {
@@ -99,7 +99,7 @@ export function createRosettaNetworkRouter(db: DataStore, chainId: ChainID): Rou
       const referenceNodeTipHeight = referenceNodeInfo.stacks_tip_height;
       const synced = currentTipHeight == referenceNodeTipHeight;
 
-      const status : RosettaSyncStatus = {
+      const status: RosettaSyncStatus = {
         current_index: currentTipHeight,
         target_index: referenceNodeTipHeight,
         synced: synced,

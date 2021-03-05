@@ -45,7 +45,7 @@ import {
   digestSha512_256,
   has0xPrefix,
 } from '../../../helpers';
-import { RosettaConstants, RosettaErrors, RosettaErrorsTypes } from "../../rosetta-constants";
+import { RosettaConstants, RosettaErrors, RosettaErrorsTypes } from '../../rosetta-constants';
 import {
   bitcoinAddressToSTXAddress,
   getOperations,
@@ -95,7 +95,7 @@ export function createRosettaConstructionRouter(db: DataStore, chainId: ChainID)
       const stxAddress = bitcoinAddressToSTXAddress(btcAddress);
 
       const accountIdentifier: RosettaAccountIdentifier = {
-        address: stxAddress, 
+        address: stxAddress,
       };
       const response: RosettaConstructionDeriveResponse = {
         account_identifier: accountIdentifier,
@@ -510,7 +510,8 @@ export function createRosettaConstructionRouter(db: DataStore, chainId: ChainID)
       return;
     }
 
-    if (signatures.length !== 1) res.status(400).json(RosettaErrors[RosettaErrorsTypes.needOnlyOneSignature]);
+    if (signatures.length !== 1)
+      res.status(400).json(RosettaErrors[RosettaErrorsTypes.needOnlyOneSignature]);
 
     if (signatures[0].public_key.curve_type !== 'secp256k1') {
       res.status(400).json(RosettaErrors[RosettaErrorsTypes.invalidCurveType]);

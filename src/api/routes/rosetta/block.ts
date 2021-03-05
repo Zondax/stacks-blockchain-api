@@ -7,7 +7,7 @@ import {
   getRosettaBlockFromDataStore,
 } from '../../controllers/db-controller';
 import { has0xPrefix } from '../../../helpers';
-import { RosettaErrors, RosettaErrorsTypes } from "../../rosetta-constants";
+import { RosettaErrors, RosettaErrorsTypes } from '../../rosetta-constants';
 import { rosettaValidateRequest, ValidSchema, makeRosettaError } from '../../rosetta-validate';
 import { ChainID } from '@stacks/transactions';
 

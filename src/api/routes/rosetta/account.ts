@@ -9,7 +9,7 @@ import {
   RosettaAccountBalanceResponse,
   RosettaSubAccount,
 } from '@blockstack/stacks-blockchain-api-types';
-import { RosettaErrors, RosettaConstants, RosettaErrorsTypes } from "../../rosetta-constants";
+import { RosettaErrors, RosettaConstants, RosettaErrorsTypes } from '../../rosetta-constants';
 import { rosettaValidateRequest, ValidSchema, makeRosettaError } from '../../rosetta-validate';
 import { ChainID } from '@stacks/transactions';
 import { StacksCoreRpcClient } from '../../../core-rpc/client';

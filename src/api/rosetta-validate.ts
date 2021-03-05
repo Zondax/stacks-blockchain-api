@@ -9,8 +9,8 @@ import {
   SchemaFiles,
   RosettaRequestType,
   getRosettaNetworkName,
-  RosettaErrorsTypes
-} from "./rosetta-constants";
+  RosettaErrorsTypes,
+} from './rosetta-constants';
 import * as T from '@blockstack/stacks-blockchain-api-types';
 import { NetworkIdentifier } from '@blockstack/stacks-blockchain-api-types';
 import { dereferenceSchema } from './validate';

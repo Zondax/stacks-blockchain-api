@@ -10,7 +10,7 @@ import {
   RosettaTransaction,
 } from '@blockstack/stacks-blockchain-api-types';
 import { getOperations } from '../../../rosetta-helpers';
-import { RosettaErrors, RosettaErrorsTypes } from "../../rosetta-constants";
+import { RosettaErrors, RosettaErrorsTypes } from '../../rosetta-constants';
 import { ChainID } from '@stacks/transactions';
 
 const MAX_MEMPOOL_TXS_PER_REQUEST = 200;
