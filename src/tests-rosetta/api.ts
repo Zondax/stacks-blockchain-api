@@ -51,7 +51,14 @@ import {
   RosettaOperation,
   RosettaTransaction,
 } from '@blockstack/stacks-blockchain-api-types';
-import { getRosettaNetworkName, RosettaConstants, RosettaErrors, RosettaErrorsTypes } from "../api/rosetta-constants";
+import {
+  getRosettaNetworkName,
+  RosettaConstants,
+  RosettaErrors,
+  RosettaErrorsTypes,
+  RosettaOperationTypes,
+  RosettaOperationStatuses
+} from "../api/rosetta-constants";
 import { GetStacksTestnetNetwork, testnetKeys } from '../api/routes/debug';
 import { getOptionsFromOperations, getSignature } from '../rosetta-helpers';
 import { makeSigHashPreSign, MessageSignature } from '@stacks/transactions';
@@ -95,64 +102,9 @@ describe('Rosetta API', () => {
         middleware_version: middlewareVersion,
       },
       allow: {
-        operation_statuses: [
-          { status: 'success', successful: true },
-          { status: 'pending', successful: true },
-          { status: 'abort_by_response', successful: false },
-          { status: 'abort_by_post_condition', successful: false },
-        ],
-        operation_types: [
-          'token_transfer',
-          'contract_call',
-          'smart_contract',
-          'coinbase',
-          'poison_microblock',
-          'fee',
-        ],
-        errors: [
-          { code: 601, message: 'Invalid Account.', retriable: true },
-          { code: 602, message: 'Insufficient Funds.', retriable: true },
-          { code: 603, message: 'Account is empty.', retriable: true },
-          { code: 604, message: 'Invalid block index.', retriable: true },
-          { code: 605, message: 'Block not found.', retriable: true },
-          { code: 606, message: 'Invalid block hash.', retriable: true },
-          { code: 607, message: 'Transaction not found.', retriable: true },
-          { code: 608, message: 'Invalid transaction hash.', retriable: true },
-          { code: 609, message: 'Invalid params.', retriable: true },
-          { code: 610, message: 'Invalid network.', retriable: true },
-          { code: 611, message: 'Invalid blockchain.', retriable: true },
-          { code: 612, message: 'Unknown error.', retriable: false },
-          { code: 613, message: 'Network identifier object is null.', retriable: true },
-          { code: 614, message: 'Account identifier object is null.', retriable: true },
-          { code: 615, message: 'Block identifier is null.', retriable: true },
-          { code: 616, message: 'Transaction identifier is null.', retriable: true },
-          { code: 617, message: 'Blockchain name is null.', retriable: true },
-          { code: 618, message: 'Network name is null.', retriable: true },
-          { code: 619, message: 'Invalid curve type.', retriable: false },
-          { code: 620, message: 'invalid public key.', retriable: false },
-          { code: 621, message: 'Invalid operation', retriable: false },
-          { code: 622, message: 'Invalid fee', retriable: false },
-          { code: 623, message: 'Invalid symbol', retriable: false },
-          { code: 624, message: 'Invalid currency decimals', retriable: false },
-          { code: 625, message: 'Invalid transaction type', retriable: false },
-          { code: 626, message: 'Invalid sender address', retriable: false },
-          { code: 627, message: 'Invalid recipient address', retriable: false },
-          { code: 628, message: 'Invalid transaction string', retriable: false },
-          { code: 629, message: 'Transaction not signed', retriable: false },
-          { code: 630, message: 'Amount not available', retriable: false },
-          { code: 631, message: 'Fees not available', retriable: false },
-          { code: 632, message: 'Public key not available', retriable: false },
-          { code: 633, message: 'no signature found', retriable: false },
-          { code: 634, message: 'Invalid Signature', retriable: false },
-          {
-            code: 635,
-            message: 'Signature(s) not verified with this public key(s)',
-            retriable: false,
-          },
-          { code: 636, message: 'Need one public key for single signature', retriable: false },
-          { code: 637, message: 'Need only one signature', retriable: false },
-          { code: 638, message: 'Signature type not supported.', retriable: false },
-        ],
+        operation_statuses: RosettaOperationStatuses,
+        operation_types: RosettaOperationTypes,
+        errors: Object.values(RosettaErrors),
         historical_balance_lookup: true,
       },
     });
@@ -165,7 +117,7 @@ describe('Rosetta API', () => {
     expect(JSON.parse(query1.text)).toEqual({
       code: 613,
       message: 'Network identifier object is null.',
-      retriable: true,
+      retriable: false,
       details: { message: "should have required property 'network_identifier'" },
     });
   });
@@ -179,7 +131,7 @@ describe('Rosetta API', () => {
     expect(JSON.parse(query1.text)).toEqual({
       code: 611,
       message: 'Invalid blockchain.',
-      retriable: true,
+      retriable: false,
     });
   });
 
@@ -192,7 +144,7 @@ describe('Rosetta API', () => {
     expect(JSON.parse(query1.text)).toEqual({
       code: 610,
       message: 'Invalid network.',
-      retriable: true,
+      retriable: false,
     });
   });
 
