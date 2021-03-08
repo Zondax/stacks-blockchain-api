@@ -651,9 +651,6 @@ describe('Rosetta API', () => {
 
     const expectResponse = {
       code: 615,
-      details: {
-        message: "should have required property 'block_identifier'",
-      },
       message: 'Block identifier is null.',
       retriable: false,
     };
