@@ -274,6 +274,7 @@ describe('Rosetta API', () => {
       .post(`/rosetta/v1/block`)
       .send({
         network_identifier: { blockchain: 'stacks', network: 'testnet' },
+        block_identifier: {},
       });
     expect(query1.status).toBe(200);
     expect(query1.type).toBe('application/json');
@@ -367,7 +368,7 @@ describe('Rosetta API', () => {
         },
         {
           operation_identifier: { index: 2 },
-          related_operations: [{ index: 0, operation_identifier: { index: 1 } }],
+          related_operations: [{ index: 1 }],
           type: 'token_transfer',
           status: 'success',
           account: { address: 'STRYYQQ9M8KAF4NS7WNZQYY59X93XEKR31JP64CP' },
@@ -549,7 +550,6 @@ describe('Rosetta API', () => {
       },
       balances: [amount],
 
-      coins: [],
       metadata: {
         sequence_number: 0,
       },
@@ -599,7 +599,6 @@ describe('Rosetta API', () => {
       },
       balances: [amount],
 
-      coins: [],
       metadata: {
         sequence_number: 1,
       },
@@ -652,8 +651,11 @@ describe('Rosetta API', () => {
 
     const expectResponse = {
       code: 615,
+      details: {
+        message: "should have required property 'block_identifier'",
+      },
       message: 'Block identifier is null.',
-      retriable: true,
+      retriable: false,
     };
 
     expect(JSON.parse(result.text)).toEqual(expectResponse);
@@ -1061,7 +1063,7 @@ describe('Rosetta API', () => {
     const expectResponse = {
       code: 613,
       message: 'Network identifier object is null.',
-      retriable: true,
+      retriable: false,
       details: {
         message: "should have required property 'network_identifier'",
       },

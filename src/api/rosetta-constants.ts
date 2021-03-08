@@ -184,7 +184,7 @@ export const RosettaErrors: Record<RosettaErrorsTypes, RosettaError> = {
   [RosettaErrorsTypes.invalidBlockIdentifier]: {
     code: 615,
     message: 'Block identifier is null.',
-    retriable: true,
+    retriable: false,
   },
   [RosettaErrorsTypes.invalidTransactionIdentifier]: {
     code: 616,
