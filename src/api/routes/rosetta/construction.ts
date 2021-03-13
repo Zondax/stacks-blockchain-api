@@ -381,8 +381,10 @@ export function createRosettaConstructionRouter(db: DataStore, chainId: ChainID)
       };
       res.status(200).json(response);
     } catch (e) {
-      let err = RosettaErrors[RosettaErrorsTypes.invalidTransactionString];
-      err.details = e.message;
+      const err = RosettaErrors[RosettaErrorsTypes.invalidTransactionString];
+      err.details = {
+        message: e.message,
+      };
       res.status(400).json(err);
     }
   });
