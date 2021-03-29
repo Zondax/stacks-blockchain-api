@@ -183,5 +183,5 @@ export class StacksCoreRpcClient {
       method: 'GET',
     });
     return result;
-  } 
+  }
 }
