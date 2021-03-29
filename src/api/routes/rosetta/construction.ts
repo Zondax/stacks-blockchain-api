@@ -118,8 +118,8 @@ export function createRosettaConstructionRouter(db: DataStore, chainId: ChainID)
 
     const operations: RosettaOperation[] = req.body.operations;
 
-    // We are only supporting transfer, we should have operations length = 3
-    if (operations.length != 3) {
+    // We are only supporting transfer, we should have operations length = 2
+    if (operations.length != 2) {
       res.status(400).json(RosettaErrors[RosettaErrorsTypes.invalidOperation]);
       return;
     }
@@ -449,8 +449,7 @@ export function createRosettaConstructionRouter(db: DataStore, chainId: ChainID)
       return;
     }
 
-    const fees = options.fee;
-    if (!fees) {
+    if (!req.body.metadata || typeof req.body.metadata.fee !== 'string') {
       res.status(400).json(RosettaErrors[RosettaErrorsTypes.invalidFees]);
       return;
     }
@@ -502,7 +501,7 @@ export function createRosettaConstructionRouter(db: DataStore, chainId: ChainID)
       tokenTransferOptions = {
         recipient: recipientAddress,
         amount: new BN(amount),
-        fee: new BN(fees),
+        fee: new BN(req.body.metadata.fee),
         publicKey: publicKeys[0].hex_bytes,
         network: GetStacksTestnetNetwork(),
         nonce: nonce,
@@ -514,7 +513,7 @@ export function createRosettaConstructionRouter(db: DataStore, chainId: ChainID)
 
     const signer = new TransactionSigner(transaction);
 
-    const prehash = makeSigHashPreSign(signer.sigHash, AuthType.Standard, new BN(fees), nonce);
+    const prehash = makeSigHashPreSign(signer.sigHash, AuthType.Standard, new BN(req.body.metadata.fee), nonce);
     const accountIdentifier: RosettaAccountIdentifier = {
       address: senderAddress,
     };
