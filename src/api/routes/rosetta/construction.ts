@@ -453,6 +453,7 @@ export function createRosettaConstructionRouter(db: DataStore, chainId: ChainID)
       res.status(400).json(RosettaErrors[RosettaErrorsTypes.invalidFees]);
       return;
     }
+    const fee: string = req.body.metadata.fee;
 
     const publicKeys: RosettaPublicKey[] = req.body.public_keys;
     if (!publicKeys) {
@@ -501,7 +502,7 @@ export function createRosettaConstructionRouter(db: DataStore, chainId: ChainID)
       tokenTransferOptions = {
         recipient: recipientAddress,
         amount: new BN(amount),
-        fee: new BN(req.body.metadata.fee),
+        fee: new BN(fee),
         publicKey: publicKeys[0].hex_bytes,
         network: GetStacksTestnetNetwork(),
         nonce: nonce,
@@ -513,7 +514,7 @@ export function createRosettaConstructionRouter(db: DataStore, chainId: ChainID)
 
     const signer = new TransactionSigner(transaction);
 
-    const prehash = makeSigHashPreSign(signer.sigHash, AuthType.Standard, new BN(req.body.metadata.fee), nonce);
+    const prehash = makeSigHashPreSign(signer.sigHash, AuthType.Standard, new BN(fee), nonce);
     const accountIdentifier: RosettaAccountIdentifier = {
       address: senderAddress,
     };

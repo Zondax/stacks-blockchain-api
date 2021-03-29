@@ -1610,7 +1610,7 @@ describe('Rosetta API', () => {
       ],
       metadata: {
         fee: '180',
-      }
+      },
     };
 
     const result = await supertest(api.server)
