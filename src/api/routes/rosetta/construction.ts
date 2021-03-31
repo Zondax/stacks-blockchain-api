@@ -51,7 +51,7 @@ import { RosettaConstants, RosettaErrors, RosettaErrorsTypes } from '../../roset
 import {
   bitcoinAddressToSTXAddress,
   getOperations,
-  getOptionsFromOperations,
+  getOptionsFromOperation,
   getSigners,
   isDecimalsSupported,
   isSignedTransaction,
@@ -118,8 +118,8 @@ export function createRosettaConstructionRouter(db: DataStore, chainId: ChainID)
 
     const operations: RosettaOperation[] = req.body.operations;
 
-    // We are only supporting transfer, we should have operations length = 2
-    if (operations.length != 2) {
+    // We are only supporting transfer, we should have operations length = 1
+    if (operations.length != 1) {
       res.status(400).json(RosettaErrors[RosettaErrorsTypes.invalidOperation]);
       return;
     }
@@ -134,24 +134,14 @@ export function createRosettaConstructionRouter(db: DataStore, chainId: ChainID)
       return;
     }
 
-    const options = getOptionsFromOperations(req.body.operations);
+    const options = getOptionsFromOperation(operations[0]);
     if (options == null) {
       res.status(400).json(RosettaErrors[RosettaErrorsTypes.invalidOperation]);
       return;
     }
 
-    if (req.body.metadata) {
-      if (req.body.metadata.gas_limit) {
-        options.gas_limit = req.body.metadata.gas_limit;
-      }
-
-      if (req.body.metadata.gas_price) {
-        options.gas_price = req.body.metadata.gas_price;
-      }
-
-      if (req.body.suggested_fee_multiplier) {
-        options.suggested_fee_multiplier = req.body.suggested_fee_multiplier;
-      }
+    if (req.body.suggested_fee_multiplier) {
+      options.suggested_fee_multiplier = req.body.suggested_fee_multiplier;
     }
 
     if (req.body.max_fee) {
@@ -437,7 +427,7 @@ export function createRosettaConstructionRouter(db: DataStore, chainId: ChainID)
       return;
     }
 
-    const options = getOptionsFromOperations(req.body.operations);
+    const options = getOptionsFromOperation(req.body.operations[0]);
     if (options == null) {
       res.status(400).json(RosettaErrors[RosettaErrorsTypes.invalidOperation]);
       return;

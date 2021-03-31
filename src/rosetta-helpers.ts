@@ -225,42 +225,28 @@ export function bitcoinAddressToSTXAddress(btcAddress: string): string {
   return c32check.b58ToC32(btcAddress);
 }
 
-export function getOptionsFromOperations(operations: RosettaOperation[]): RosettaOptions | null {
-  let feeOperation: RosettaOperation | null = null;
-  let transferToOperation: RosettaOperation | null = null;
-  let transferFromOperation: RosettaOperation | null = null;
+export function getOptionsFromOperation(operation: RosettaOperation): RosettaOptions | null {
+  switch (operation.type) {
+    case 'token_transfer':
 
-  for (const operation of operations) {
-    switch (operation.type) {
-      case 'fee':
-        feeOperation = operation;
-        break;
-      case 'token_transfer':
-        if (operation.amount) {
-          if (BigInt(operation.amount.value) < 0) {
-            transferFromOperation = operation;
-          } else {
-            transferToOperation = operation;
-          }
-        }
-        break;
-      default:
+      const recipient_address = operation.metadata?.recipient_address as string || null;
+      if (recipient_address === null) {
         return null;
-    }
+      }
+
+      const options: RosettaOptions = {
+        sender_address: operation.account?.address,
+        type: operation.type,
+        token_transfer_recipient_address: recipient_address,
+        status: null,
+        amount: operation.amount?.value,
+        symbol: operation.amount?.currency.symbol,
+        decimals: operation.amount?.currency.decimals,
+      };
+      return options;
+    default:
+      return null;
   }
-
-  const options: RosettaOptions = {
-    sender_address: transferFromOperation?.account?.address,
-    type: transferFromOperation?.type,
-    status: transferFromOperation?.status,
-    token_transfer_recipient_address: transferToOperation?.account?.address,
-    amount: transferToOperation?.amount?.value,
-    symbol: transferToOperation?.amount?.currency.symbol,
-    decimals: transferToOperation?.amount?.currency.decimals,
-    fee: feeOperation?.amount?.value,
-  };
-
-  return options;
 }
 
 export function isSymbolSupported(operations: RosettaOperation[]): boolean {

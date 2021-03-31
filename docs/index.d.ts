@@ -1530,7 +1530,7 @@ export interface RosettaOptions {
   /**
    * Recipient's address
    */
-  token_transfer_recipient_address?: string;
+  token_transfer_recipient_address?: string | null;
   /**
    * Amount to be transfered.
    */
@@ -1543,14 +1543,6 @@ export interface RosettaOptions {
    * Number of decimal places
    */
   decimals?: number;
-  /**
-   * Maximum price a user is willing to pay.
-   */
-  gas_limit?: number;
-  /**
-   * Cost necessary to perform a transaction on the network
-   */
-  gas_price?: number;
   /**
    *  A suggested fee multiplier to indicate that the suggested fee should be scaled. This may be used to set higher fees for urgent transactions or to pay lower fees when there is less urgency.
    */
@@ -1742,17 +1734,9 @@ export interface RosettaOperation {
   amount?: RosettaAmount;
   coin_change?: RosettaCoinChange;
   /**
-   * Operations Meta Data
+   * Operations metadata
    */
   metadata?: {
-    /**
-     * The asm
-     */
-    asm: string;
-    /**
-     * The hex
-     */
-    hex: string;
     [k: string]: unknown | undefined;
   };
 }

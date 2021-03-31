@@ -18,7 +18,7 @@
       "description": "This value indicates the state of the operations"
     },
     "token_transfer_recipient_address": {
-      "type": "string",
+      "type": ["string", "null"],
       "description": "Recipient's address"
     },
     "amount": {
@@ -32,14 +32,6 @@
     "decimals": {
       "type": "integer",
       "description": "Number of decimal places"
-    },
-    "gas_limit": {
-      "type": "number",
-      "description": "Maximum price a user is willing to pay."
-    },
-    "gas_price": {
-      "type": "number",
-      "description": "Cost necessary to perform a transaction on the network"
     },
     "suggested_fee_multiplier": {
       "type": "number",

@@ -60,7 +60,7 @@ import {
   RosettaOperationStatuses,
 } from '../api/rosetta-constants';
 import { getStacksTestnetNetwork, testnetKeys } from '../api/routes/debug';
-import { getOptionsFromOperations, getSignature } from '../rosetta-helpers';
+import { getSignature } from '../rosetta-helpers';
 import { makeSigHashPreSign, MessageSignature } from '@stacks/transactions';
 
 describe('Rosetta API', () => {
@@ -776,27 +776,6 @@ describe('Rosetta API', () => {
             metadata: {},
           },
           amount: {
-            value: '-500000',
-            currency: {
-              symbol: 'STX',
-              decimals: 6,
-            },
-            metadata: {},
-          },
-        },
-        {
-          operation_identifier: {
-            index: 1,
-            network_index: 0,
-          },
-          related_operations: [],
-          type: 'token_transfer',
-          status: null,
-          account: {
-            address: 'STDE7Y8HV3RX8VBM2TZVWJTS7ZA1XB0SSC3NEVH0',
-            metadata: {},
-          },
-          amount: {
             value: '500000',
             currency: {
               symbol: 'STX',
@@ -804,9 +783,11 @@ describe('Rosetta API', () => {
             },
             metadata: {},
           },
+          metadata: {
+            recipient_address: 'STDE7Y8HV3RX8VBM2TZVWJTS7ZA1XB0SSC3NEVH0',
+          },
         },
       ],
-      metadata: {},
       max_fee: [
         {
           value: '12380898',
@@ -823,6 +804,8 @@ describe('Rosetta API', () => {
     const result = await supertest(api.server)
       .post(`/rosetta/v1/construction/preprocess`)
       .send(request);
+
+    console.log(result);
 
     expect(result.status).toBe(200);
     expect(result.type).toBe('application/json');
@@ -877,30 +860,11 @@ describe('Rosetta API', () => {
             },
             metadata: {},
           },
-        },
-        {
-          operation_identifier: {
-            index: 1,
-            network_index: 0,
-          },
-          related_operations: [],
-          type: 'token_transfer',
-          status: null,
-          account: {
-            address: 'STDE7Y8HV3RX8VBM2TZVWJTS7ZA1XB0SSC3NEVH0',
-            metadata: {},
-          },
-          amount: {
-            value: '500000',
-            currency: {
-              symbol: 'STX',
-              decimals: 6,
-            },
-            metadata: {},
+          metadata: {
+            recipient_address: "STDE7Y8HV3RX8VBM2TZVWJTS7ZA1XB0SSC3NEVH0",
           },
         },
       ],
-      metadata: {},
       max_fee: [
         {
           value: '12380898',
@@ -1082,7 +1046,6 @@ describe('Rosetta API', () => {
         amount: '500000',
         symbol: 'STX',
         decimals: 6,
-        fee: '-180',
         max_fee: '12380898',
         size: 180,
       },
@@ -1390,33 +1353,15 @@ describe('Rosetta API', () => {
             metadata: {},
           },
           amount: {
-            value: '-500000',
-            currency: {
-              symbol: 'STX',
-              decimals: 6,
-            },
-            metadata: {},
-          },
-        },
-        {
-          operation_identifier: {
-            index: 1,
-            network_index: 0,
-          },
-          related_operations: [],
-          type: 'token_transfer',
-          status: null,
-          account: {
-            address: recipient,
-            metadata: {},
-          },
-          amount: {
             value: '500000',
             currency: {
               symbol: 'STX',
               decimals: 6,
             },
             metadata: {},
+          },
+          metadata: {
+            recipient_address: recipient,
           },
         },
       ],
@@ -1501,27 +1446,6 @@ describe('Rosetta API', () => {
             metadata: {},
           },
           amount: {
-            value: '-500000',
-            currency: {
-              symbol: 'STX',
-              decimals: 6,
-            },
-            metadata: {},
-          },
-        },
-        {
-          operation_identifier: {
-            index: 1,
-            network_index: 0,
-          },
-          related_operations: [],
-          type: 'token_transfer',
-          status: null,
-          account: {
-            address: recipient,
-            metadata: {},
-          },
-          amount: {
             value: '500000',
             currency: {
               symbol: 'STX',
@@ -1529,6 +1453,9 @@ describe('Rosetta API', () => {
             },
             metadata: {},
           },
+          metadata: {
+            recipient_address: recipient,
+          }
         },
       ],
       metadata: {
@@ -1585,27 +1512,9 @@ describe('Rosetta API', () => {
             },
             metadata: {},
           },
-        },
-        {
-          operation_identifier: {
-            index: 1,
-            network_index: 0,
-          },
-          related_operations: [],
-          type: 'token_transfer',
-          status: null,
-          account: {
-            address: 'STDE7Y8HV3RX8VBM2TZVWJTS7ZA1XB0SSC3NEVH0',
-            metadata: {},
-          },
-          amount: {
-            value: '500000',
-            currency: {
-              symbol: 'STX',
-              decimals: 6,
-            },
-            metadata: {},
-          },
+          metadata: {
+            recipient_address: 'STDE7Y8HV3RX8VBM2TZVWJTS7ZA1XB0SSC3NEVH0',
+          }
         },
       ],
       metadata: {
@@ -1652,27 +1561,9 @@ describe('Rosetta API', () => {
             },
             metadata: {},
           },
-        },
-        {
-          operation_identifier: {
-            index: 1,
-            network_index: 0,
-          },
-          related_operations: [],
-          type: 'token_transfer',
-          status: null,
-          account: {
-            address: 'STDE7Y8HV3RX8VBM2TZVWJTS7ZA1XB0SSC3NEVH0',
-            metadata: {},
-          },
-          amount: {
-            value: '500000',
-            currency: {
-              symbol: 'STX',
-              decimals: 6,
-            },
-            metadata: {},
-          },
+          metadata: {
+            recipient_address: 'STDE7Y8HV3RX8VBM2TZVWJTS7ZA1XB0SSC3NEVH0',
+          }
         },
       ],
       metadata: {
