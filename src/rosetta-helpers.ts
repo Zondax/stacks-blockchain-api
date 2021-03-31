@@ -228,8 +228,7 @@ export function bitcoinAddressToSTXAddress(btcAddress: string): string {
 export function getOptionsFromOperation(operation: RosettaOperation): RosettaOptions | null {
   switch (operation.type) {
     case 'token_transfer':
-
-      const recipient_address = operation.metadata?.recipient_address as string || null;
+      const recipient_address = (operation.metadata?.recipient_address as string) || null;
       if (recipient_address === null) {
         return null;
       }

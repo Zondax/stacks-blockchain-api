@@ -861,7 +861,7 @@ describe('Rosetta API', () => {
             metadata: {},
           },
           metadata: {
-            recipient_address: "STDE7Y8HV3RX8VBM2TZVWJTS7ZA1XB0SSC3NEVH0",
+            recipient_address: 'STDE7Y8HV3RX8VBM2TZVWJTS7ZA1XB0SSC3NEVH0',
           },
         },
       ],
@@ -1455,7 +1455,7 @@ describe('Rosetta API', () => {
           },
           metadata: {
             recipient_address: recipient,
-          }
+          },
         },
       ],
       metadata: {
@@ -1514,7 +1514,7 @@ describe('Rosetta API', () => {
           },
           metadata: {
             recipient_address: 'STDE7Y8HV3RX8VBM2TZVWJTS7ZA1XB0SSC3NEVH0',
-          }
+          },
         },
       ],
       metadata: {
@@ -1563,7 +1563,7 @@ describe('Rosetta API', () => {
           },
           metadata: {
             recipient_address: 'STDE7Y8HV3RX8VBM2TZVWJTS7ZA1XB0SSC3NEVH0',
-          }
+          },
         },
       ],
       metadata: {
