@@ -14,6 +14,10 @@ export const RosettaConstants = {
   decimals: 6,
   lockedBalance: 'LockedBalance',
   spendableBalance: 'SpendableBalance',
+  vestedBalance: 'VestedBalance',
+  vestingTotalLockedKey: 'vesting_total_locked',
+  vestingTotalUnlockedKey: 'vesting_total_unlocked',
+  vestingScheduleKey: 'vesting_schedule',
 };
 
 export const ReferenceNodes: { [key: string]: any } = {
@@ -109,6 +113,7 @@ export enum RosettaErrorsTypes {
   signatureTypeNotSupported,
   missingTransactionSize,
   stackingEligibityError,
+  invalidSubAccount,
 }
 
 // All possible errors
@@ -318,6 +323,11 @@ export const RosettaErrors: Record<RosettaErrorsTypes, RosettaError> = {
   [RosettaErrorsTypes.stackingEligibityError]: {
     code: 640,
     message: 'Account not eligible for stacking.',
+    retriable: false,
+  },
+  [RosettaErrorsTypes.invalidSubAccount]: {
+    code: 641,
+    message: 'Invalid sub-account',
     retriable: false,
   },
 };

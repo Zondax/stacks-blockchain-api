@@ -8,6 +8,7 @@ import {
   RosettaBlockIdentifier,
   RosettaAccountBalanceResponse,
   RosettaSubAccount,
+  TokenOfferingLocked,
 } from '@blockstack/stacks-blockchain-api-types';
 import { RosettaErrors, RosettaConstants, RosettaErrorsTypes } from '../../rosetta-constants';
 import { rosettaValidateRequest, ValidSchema, makeRosettaError } from '../../rosetta-validate';
@@ -66,6 +67,8 @@ export function createRosettaAccountRouter(db: DataStore, chainId: ChainID): Rou
 
     const accountInfo = await new StacksCoreRpcClient().getAccount(accountIdentifier.address);
 
+    let extra_metadata: any = {};
+
     if (subAccountIdentifier !== undefined) {
       switch (subAccountIdentifier.address) {
         // Refers to staked tokens
@@ -77,6 +80,16 @@ export function createRosettaAccountRouter(db: DataStore, chainId: ChainID): Rou
           const spendableBalance = stxBalance.balance - stxBalance.locked;
           balance = spendableBalance.toString();
           break;
+        case RosettaConstants.vestedBalance:
+          const stxVesting = await db.getTokenOfferingLocked(accountIdentifier.address);
+          if (stxVesting.found) {
+            extra_metadata = getVestingInfo(stxVesting.result, block.block_height);
+          } else {
+            balance = "0"
+          }
+          break;
+        default:
+          return res.status(500).json(RosettaErrors[RosettaErrorsTypes.invalidSubAccount]);
       }
     }
 
@@ -92,6 +105,9 @@ export function createRosettaAccountRouter(db: DataStore, chainId: ChainID): Rou
             symbol: RosettaConstants.symbol,
             decimals: RosettaConstants.decimals,
           },
+          metadata: {
+            ...extra_metadata,
+          },
         },
       ],
       metadata: {
@@ -103,4 +119,19 @@ export function createRosettaAccountRouter(db: DataStore, chainId: ChainID): Rou
   });
 
   return router;
+}
+
+function getVestingInfo(info: TokenOfferingLocked, block_height: number): any {
+  const vestingData: any = {};
+  let total_unlocked = BigInt(0);
+  for (const unlocked of info.unlock_schedule) {
+    if (unlocked.block_height <= block_height) {
+      total_unlocked += BigInt(unlocked.amount);
+    }
+  }
+
+  vestingData[RosettaConstants.vestingTotalLockedKey] = info.total_locked;
+  vestingData[RosettaConstants.vestingTotalUnlockedKey] = total_unlocked.toString();
+  vestingData[RosettaConstants.vestingScheduleKey] = info.unlock_schedule;
+  return vestingData;
 }
