@@ -12,12 +12,11 @@ export const RosettaConstants = {
   rosettaVersion: '1.4.6',
   symbol: 'STX',
   decimals: 6,
-  lockedBalance: 'LockedBalance',
-  spendableBalance: 'SpendableBalance',
-  vestedBalance: 'VestedBalance',
-  vestingTotalLockedKey: 'vesting_total_locked',
-  vestingTotalUnlockedKey: 'vesting_total_unlocked',
-  vestingScheduleKey: 'vesting_schedule',
+  StakedBalance: 'StakedBalance',
+  SpendableBalance: 'SpendableBalance',
+  VestingLockedBalance: 'VestingLockedBalance',
+  VestingUnlockedBalance: 'VestingUnlockedBalance',
+  VestingSchedule: 'VestingSchedule',
 };
 
 export const ReferenceNodes: { [key: string]: any } = {
@@ -51,6 +50,7 @@ export const RosettaOperationTypes = [
   'mint',
   'burn',
   'miner_reward',
+  'stx_lock',
 ];
 
 export const RosettaOperationStatuses = [

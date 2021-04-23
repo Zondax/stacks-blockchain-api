@@ -71,19 +71,21 @@ export function createRosettaAccountRouter(db: DataStore, chainId: ChainID): Rou
 
     if (subAccountIdentifier !== undefined) {
       switch (subAccountIdentifier.address) {
-        // Refers to staked tokens
-        case RosettaConstants.lockedBalance:
+        case RosettaConstants.StakedBalance:
           const lockedBalance = stxBalance.locked;
           balance = lockedBalance.toString();
           break;
-        case RosettaConstants.spendableBalance:
+        case RosettaConstants.SpendableBalance:
           const spendableBalance = stxBalance.balance - stxBalance.locked;
           balance = spendableBalance.toString();
           break;
-        case RosettaConstants.vestedBalance:
+        case RosettaConstants.VestingLockedBalance:
+        case RosettaConstants.VestingUnlockedBalance:
           const stxVesting = await db.getTokenOfferingLocked(accountIdentifier.address);
           if (stxVesting.found) {
-            extra_metadata = getVestingInfo(stxVesting.result, block.block_height);
+            const vestingInfo = getVestingInfo(stxVesting.result, block.block_height);
+            balance = vestingInfo[subAccountIdentifier.address].toString()
+            extra_metadata[RosettaConstants.VestingSchedule] = vestingInfo[RosettaConstants.VestingSchedule]
           } else {
             balance = "0"
           }
@@ -130,8 +132,8 @@ function getVestingInfo(info: TokenOfferingLocked, block_height: number): any {
     }
   }
 
-  vestingData[RosettaConstants.vestingTotalLockedKey] = info.total_locked;
-  vestingData[RosettaConstants.vestingTotalUnlockedKey] = total_unlocked.toString();
-  vestingData[RosettaConstants.vestingScheduleKey] = info.unlock_schedule;
+  vestingData[RosettaConstants.VestingLockedBalance] = info.total_locked;
+  vestingData[RosettaConstants.VestingUnlockedBalance] = total_unlocked.toString();
+  vestingData[RosettaConstants.VestingSchedule] = info.unlock_schedule;
   return vestingData;
 }
