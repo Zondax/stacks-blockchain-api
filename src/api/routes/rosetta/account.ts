@@ -108,9 +108,7 @@ export function createRosettaAccountRouter(db: DataStore, chainId: ChainID): Rou
             symbol: RosettaConstants.symbol,
             decimals: RosettaConstants.decimals,
           },
-          metadata: {
-            ...extra_metadata,
-          },
+          metadata: Object.keys(extra_metadata).length > 0 ? extra_metadata : undefined,
         },
       ],
       metadata: {
