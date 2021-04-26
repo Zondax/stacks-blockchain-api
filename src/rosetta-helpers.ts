@@ -143,7 +143,7 @@ export function processEvents(events: DbEvent[], baseTx: BaseTx, operations: Ros
         break;
       case DbEventTypeId.StxLock:
         const stxLockEvent = event as DbStxLockEvent;
-        operations.push(makeStakeLockOperation(stxLockEvent, baseTx, operations.length))
+        operations.push(makeStakeLockOperation(stxLockEvent, baseTx, operations.length));
         break;
       case DbEventTypeId.NonFungibleTokenAsset:
         break;
@@ -157,7 +157,11 @@ export function processEvents(events: DbEvent[], baseTx: BaseTx, operations: Ros
   });
 }
 
-function makeStakeLockOperation(tx: DbStxLockEvent, baseTx: BaseTx, index: number): RosettaOperation {
+function makeStakeLockOperation(
+  tx: DbStxLockEvent,
+  baseTx: BaseTx,
+  index: number
+): RosettaOperation {
   const stake: RosettaOperation = {
     operation_identifier: { index: index },
     type: getEventTypeString(tx.event_type),

@@ -67,7 +67,7 @@ export function createRosettaAccountRouter(db: DataStore, chainId: ChainID): Rou
 
     const accountInfo = await new StacksCoreRpcClient().getAccount(accountIdentifier.address);
 
-    let extra_metadata: any = {};
+    const extra_metadata: any = {};
 
     if (subAccountIdentifier !== undefined) {
       switch (subAccountIdentifier.address) {
@@ -84,10 +84,11 @@ export function createRosettaAccountRouter(db: DataStore, chainId: ChainID): Rou
           const stxVesting = await db.getTokenOfferingLocked(accountIdentifier.address);
           if (stxVesting.found) {
             const vestingInfo = getVestingInfo(stxVesting.result, block.block_height);
-            balance = vestingInfo[subAccountIdentifier.address].toString()
-            extra_metadata[RosettaConstants.VestingSchedule] = vestingInfo[RosettaConstants.VestingSchedule]
+            balance = vestingInfo[subAccountIdentifier.address].toString();
+            extra_metadata[RosettaConstants.VestingSchedule] =
+              vestingInfo[RosettaConstants.VestingSchedule];
           } else {
-            balance = "0"
+            balance = '0';
           }
           break;
         default:
