@@ -287,7 +287,7 @@ describe('Rosetta API', () => {
         block_identifier: {},
       });
 
-      expect(query1.status).toBe(200);
+    expect(query1.status).toBe(200);
     expect(query1.type).toBe('application/json');
     expect(JSON.parse(query1.text)).toEqual({
       block: {
