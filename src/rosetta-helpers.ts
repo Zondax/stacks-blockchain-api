@@ -162,6 +162,9 @@ function makeStakeLockOperation(
   baseTx: BaseTx,
   index: number
 ): RosettaOperation {
+  const stake_metadata: any = {};
+  stake_metadata.locked = tx.locked_amount;
+  stake_metadata.unlock_height = tx.unlock_height;
   const stake: RosettaOperation = {
     operation_identifier: { index: index },
     type: getEventTypeString(tx.event_type),
@@ -169,6 +172,7 @@ function makeStakeLockOperation(
     account: {
       address: unwrapOptional(tx.locked_address, () => 'Unexpected nullish locked_address'),
     },
+    metadata: stake_metadata,
   };
 
   return stake;
