@@ -14,10 +14,7 @@ import {
   Transaction,
 } from '../p2p/tx';
 import { c32address } from 'c32check';
-import {
-  AddressTokenOfferingLocked,
-  TransactionType,
-} from '@blockstack/stacks-blockchain-api-types';
+import { AddressTokenOfferingLocked, TransactionType } from '@stacks/stacks-blockchain-api-types';
 import { getTxSenderAddress } from '../event-stream/reader';
 import { RawTxQueryResult } from './postgres-store';
 
@@ -286,7 +283,7 @@ export interface DbTxWithStxTransfers {
 
 export interface AddressTxUpdateInfo {
   address: string;
-  txs: DbTx[];
+  txs: Map<DbTx, Set<DbStxEvent>>;
 }
 
 export interface AddressNftEventIdentifier {
@@ -302,7 +299,7 @@ export type DataStoreEventEmitter = StrictEventEmitter<
   EventEmitter,
   {
     txUpdate: (info: DbTx | DbMempoolTx) => void;
-    blockUpdate: (block: DbBlock) => void;
+    blockUpdate: (block: DbBlock, txIds: string[]) => void;
     addressUpdate: (info: AddressTxUpdateInfo) => void;
     nameUpdate: (info: string) => void;
   }
@@ -628,6 +625,7 @@ export interface DataStore extends DataStoreEventEmitter {
   ): Promise<FoundOrNot<AddressTokenOfferingLocked>>;
 
   getUnlockedAddressesAtBlock(burnBlockHeight: number): Promise<StxUnlockEvent[]>;
+  close(): Promise<void>;
 }
 
 export function getAssetEventId(event_index: number, event_tx_id: string): string {

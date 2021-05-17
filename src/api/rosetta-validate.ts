@@ -1,9 +1,7 @@
 import * as Ajv from 'ajv';
-import * as RefParser from '@apidevtools/json-schema-ref-parser';
 import { hexToBuffer, logger, has0xPrefix, isValidC32Address, isValidPrincipal } from '../helpers';
 import {
   RosettaConstants,
-  RosettaError,
   RosettaErrors,
   RosettaSchemas,
   SchemaFiles,
@@ -11,9 +9,8 @@ import {
   getRosettaNetworkName,
   RosettaErrorsTypes,
 } from './rosetta-constants';
-import * as T from '@blockstack/stacks-blockchain-api-types';
-import { NetworkIdentifier } from '@blockstack/stacks-blockchain-api-types';
-import { dereferenceSchema } from './validate';
+import * as T from '@stacks/stacks-blockchain-api-types';
+import { dereferenceSchema, getDocSchemaFile } from './validate';
 import { ChainID } from '@stacks/transactions';
 
 export interface ValidSchema {
@@ -23,7 +20,8 @@ export interface ValidSchema {
 }
 
 export async function validate(schemaFilePath: string, data: any): Promise<ValidSchema> {
-  const schemaDef = await dereferenceSchema(schemaFilePath);
+  const resolvedFilePath = getDocSchemaFile(schemaFilePath);
+  const schemaDef = await dereferenceSchema(resolvedFilePath);
   const ajv = new Ajv({ schemaId: 'auto' });
   const valid = await ajv.validate(schemaDef, data);
   if (!valid) {
@@ -52,8 +50,7 @@ export async function rosettaValidateRequest(
     return { valid: true };
   }
 
-  const path = require.resolve(schemas.request);
-  const valid = await validate(path, body);
+  const valid = await validate(schemas.request, body);
 
   if (!valid.valid) {
     return valid;
@@ -116,36 +113,49 @@ function validHexId(
 }
 
 // TODO: there has to be a better way to go from ajv errors to rosetta errors.
-export function makeRosettaError(notValid: ValidSchema): RosettaError {
-  let resp: RosettaError = RosettaErrors[RosettaErrorsTypes.unknownError];
+export function makeRosettaError(notValid: ValidSchema): Readonly<T.RosettaError> {
+  const error = notValid.error || '';
+  if (error.search(/network_identifier/) != -1) {
+    return {
+      ...RosettaErrors[RosettaErrorsTypes.emptyNetworkIdentifier],
+      details: { message: error },
+    };
+  } else if (error.search(/blockchain/) != -1) {
+    return {
+      ...RosettaErrors[RosettaErrorsTypes.emptyBlockchain],
+      details: { message: error },
+    };
+  } else if (error.search(/network/) != -1) {
+    return {
+      ...RosettaErrors[RosettaErrorsTypes.emptyNetwork],
+      details: { message: error },
+    };
+  } else if (error.search(/block_identifier/) != -1) {
+    return {
+      ...RosettaErrors[RosettaErrorsTypes.invalidBlockIdentifier],
+      details: { message: error },
+    };
+  } else if (error.search(/transaction_identifier/) != -1) {
+    return {
+      ...RosettaErrors[RosettaErrorsTypes.invalidTransactionIdentifier],
+      details: { message: error },
+    };
+  } else if (error.search(/operations/) != -1) {
+    return {
+      ...RosettaErrors[RosettaErrorsTypes.invalidOperation],
+      details: { message: error },
+    };
+  } else if (error.search(/should have required property/) != -1) {
+    return {
+      ...RosettaErrors[RosettaErrorsTypes.invalidParams],
+      details: { message: error },
+    };
+  }
 
   // we've already identified the problem
   if (notValid.errorType !== undefined) {
-    resp = RosettaErrors[notValid.errorType];
+    return RosettaErrors[notValid.errorType];
   }
 
-  const error = notValid.error || '';
-  if (error.search(/network_identifier/) != -1) {
-    resp = RosettaErrors[RosettaErrorsTypes.emptyNetworkIdentifier];
-    resp.details = { message: error };
-  } else if (error.search(/blockchain/) != -1) {
-    resp = RosettaErrors[RosettaErrorsTypes.emptyBlockchain];
-    resp.details = { message: error };
-  } else if (error.search(/network/) != -1) {
-    resp = RosettaErrors[RosettaErrorsTypes.emptyNetwork];
-    resp.details = { message: error };
-  } else if (error.search(/block_identifier/) != -1) {
-    resp = RosettaErrors[RosettaErrorsTypes.invalidBlockIdentifier];
-    resp.details = { message: error };
-  } else if (error.search(/transaction_identifier/) != -1) {
-    resp = RosettaErrors[RosettaErrorsTypes.invalidTransactionIdentifier];
-    resp.details = { message: error };
-  } else if (error.search(/operations/) != -1) {
-    resp = RosettaErrors[RosettaErrorsTypes.invalidOperation];
-    resp.details = { message: error };
-  } else if (error.search(/should have required property/) != -1) {
-    resp = RosettaErrors[RosettaErrorsTypes.invalidParams];
-    resp.details = { message: error };
-  }
-  return resp;
+  return RosettaErrors[RosettaErrorsTypes.unknownError];
 }

@@ -21,7 +21,8 @@ import {
   RosettaAmount,
   RosettaCurrency,
   RosettaTransaction,
-} from '@blockstack/stacks-blockchain-api-types';
+  RosettaError,
+} from '@stacks/stacks-blockchain-api-types';
 import {
   createMessageSignature,
   emptyMessageSignature,
@@ -436,17 +437,6 @@ export function createRosettaConstructionRouter(db: DataStore, chainId: ChainID)
       transaction = '0x' + transaction;
     }
 
-    const tx = rawTxToStacksTransaction(transaction);
-    if (tx.auth && tx.auth.spendingCondition && 'signature' in tx.auth.spendingCondition) {
-      tx.auth.spendingCondition.signature.data =
-        tx.auth.spendingCondition.signature.data.slice(-2) +
-        tx.auth.spendingCondition.signature.data.slice(0, -2);
-      transaction = '0x' + tx.serialize().toString('hex');
-    } else {
-      res.status(500).json(RosettaErrors[RosettaErrorsTypes.invalidTransactionString]);
-      return;
-    }
-
     try {
       buffer = hexToBuffer(transaction);
     } catch (error) {
@@ -462,9 +452,9 @@ export function createRosettaConstructionRouter(db: DataStore, chainId: ChainID)
       };
       res.status(200).json(response);
     } catch (e) {
-      const err = RosettaErrors[RosettaErrorsTypes.invalidTransactionString];
-      err.details = {
-        message: e.message,
+      const err: RosettaError = {
+        ...RosettaErrors[RosettaErrorsTypes.invalidTransactionString],
+        details: { message: e.message },
       };
       res.status(500).json(err);
     }
@@ -514,14 +504,12 @@ export function createRosettaConstructionRouter(db: DataStore, chainId: ChainID)
       return;
     }
 
-    const accountInfo = await new StacksCoreRpcClient().getAccount(senderAddress);
-    let nonce = new BN(0);
-
-    if ('metadata' in req.body && 'account_sequence' in req.body.metadata) {
-      nonce = new BN(req.body.metadata.account_sequence);
-    } else if (accountInfo.nonce) {
-      nonce = new BN(accountInfo.nonce);
+    if (!('metadata' in req.body) || !('account_sequence' in req.body.metadata)) {
+      res.status(500).json(RosettaErrors[RosettaErrorsTypes.missingNonce]);
+      return;
     }
+
+    const nonce = new BN(req.body.metadata.account_sequence);
 
     if (publicKeys.length !== 1) {
       //TODO support multi-sig in the future.

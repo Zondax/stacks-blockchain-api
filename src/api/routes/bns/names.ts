@@ -3,7 +3,7 @@ import { RouterWithAsync, addAsync } from '@awaitjs/express';
 import { DataStore } from '../../../datastore/common';
 import { parsePagingQueryInput } from '../../../api/pagination';
 import { bnsBlockchain, BnsErrors } from '../../../bns-constants';
-import { BnsGetNameInfoResponse } from '@blockstack/stacks-blockchain-api-types';
+import { BnsGetNameInfoResponse } from '@stacks/stacks-blockchain-api-types';
 
 export function createBnsNamesRouter(db: DataStore): RouterWithAsync {
   const router = addAsync(express.Router());
@@ -12,8 +12,15 @@ export function createBnsNamesRouter(db: DataStore): RouterWithAsync {
     // Fetches the historical zonefile specified by the username and zone hash.
     const { name, zoneFileHash } = req.params;
 
+    let nameFound = false;
     const nameQuery = await db.getName({ name: name });
-    if (nameQuery.found) {
+    nameFound = nameQuery.found;
+    if (!nameFound) {
+      const subdomainQuery = await db.getSubdomain({ subdomain: name });
+      nameFound = subdomainQuery.found;
+    }
+
+    if (nameFound) {
       const zonefile = await db.getHistoricalZoneFile({ name: name, zoneFileHash: zoneFileHash });
       if (zonefile.found) {
         res.json(zonefile.result);
@@ -29,8 +36,15 @@ export function createBnsNamesRouter(db: DataStore): RouterWithAsync {
     // Fetch a user’s raw zone file. This only works for RFC-compliant zone files. This method returns an error for names that have non-standard zone files.
     const { name } = req.params;
 
+    let nameFound = false;
     const nameQuery = await db.getName({ name: name });
-    if (nameQuery.found) {
+    nameFound = nameQuery.found;
+    if (!nameFound) {
+      const subdomainQuery = await db.getSubdomain({ subdomain: name });
+      nameFound = subdomainQuery.found;
+    }
+
+    if (nameFound) {
       const zonefile = await db.getLatestZoneFile({ name: name });
       if (zonefile.found) {
         res.json(zonefile.result);
@@ -63,6 +77,9 @@ export function createBnsNamesRouter(db: DataStore): RouterWithAsync {
         const namePart = name.split('.').slice(1).join('.');
         const resolverResult = await db.getSubdomainResolver({ name: namePart });
         if (resolverResult.found) {
+          if (resolverResult.result === '') {
+            return res.status(404).json({ error: `missing resolver from a malformed zonefile` });
+          }
           res.redirect(`${resolverResult.result}/v1/names${req.url}`);
           next();
           return;

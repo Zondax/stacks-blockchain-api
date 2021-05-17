@@ -48,7 +48,7 @@ import {
   RosettaMempoolTransactionResponse,
   RosettaOperation,
   RosettaTransaction,
-} from '@blockstack/stacks-blockchain-api-types';
+} from '@stacks/stacks-blockchain-api-types';
 import {
   getRosettaNetworkName,
   RosettaConstants,
@@ -1283,20 +1283,13 @@ describe('Rosetta API', () => {
     const transaction = await makeSTXTokenTransfer(txOptions);
     const serializedTx = transaction.serialize().toString('hex');
 
-    const tx = rawTxToStacksTransaction('0x' + serializedTx);
-    if (tx.auth && tx.auth.spendingCondition && 'signature' in tx.auth.spendingCondition) {
-      tx.auth.spendingCondition.signature.data =
-        tx.auth.spendingCondition.signature.data.slice(2) +
-        tx.auth.spendingCondition.signature.data.slice(0, 2);
-    }
-
     const request: RosettaConstructionHashRequest = {
       network_identifier: {
         blockchain: RosettaConstants.blockchain,
         network: getRosettaNetworkName(ChainID.Testnet),
       },
       // signed transaction bytes
-      signed_transaction: '0x' + tx.serialize().toString('hex'),
+      signed_transaction: '0x' + serializedTx,
     };
     const result = await supertest(api.server)
       .post(`/rosetta/v1/construction/submit`)
@@ -1335,7 +1328,7 @@ describe('Rosetta API', () => {
 
     console.log(expectedResponse);
 
-    expect(JSON.parse(result.text)).toEqual(expectedResponse);
+    expect(JSON.parse(result.text)).toMatchObject(expectedResponse);
   });
 
   test('payloads single sign success', async () => {
@@ -1542,6 +1535,7 @@ describe('Rosetta API', () => {
       ],
       metadata: {
         fee,
+        account_sequence: 0,
       },
       public_keys: [
         {
@@ -1637,6 +1631,7 @@ describe('Rosetta API', () => {
       ],
       metadata: {
         fee: '180',
+        account_sequence: 0,
       },
     };
 
@@ -1720,7 +1715,9 @@ describe('Rosetta API', () => {
           },
         },
       ],
-      metadata: {},
+      metadata: {
+        account_sequence: 0,
+      },
       public_keys: [
         {
           hex_bytes: '025c13b2fc2261956d8a4ad07d481b1a3b2cbf93a24f992249a61c3a1c4de79c51',

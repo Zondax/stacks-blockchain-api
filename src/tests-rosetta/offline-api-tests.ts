@@ -33,7 +33,7 @@ import {
   RosettaConstructionPayloadsRequest,
   RosettaConstructionPreprocessRequest,
   RosettaConstructionPreprocessResponse,
-} from '@blockstack/stacks-blockchain-api-types';
+} from '@stacks/stacks-blockchain-api-types';
 import {
   getRosettaNetworkName,
   RosettaConstants,
@@ -446,6 +446,7 @@ describe('Rosetta API', () => {
       ],
       metadata: {
         fee: fee,
+        account_sequence: 0,
       },
       public_keys: [
         {
@@ -575,6 +576,7 @@ describe('Rosetta API', () => {
       ],
       metadata: {
         fee,
+        account_sequence: 0,
       },
       public_keys: [
         {

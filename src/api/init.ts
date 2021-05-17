@@ -6,6 +6,7 @@ import { v4 as uuid } from 'uuid';
 import * as cors from 'cors';
 import { addAsync, ExpressWithAsync } from '@awaitjs/express';
 import * as WebSocket from 'ws';
+import * as SocketIO from 'socket.io';
 
 import { DataStore } from '../datastore/common';
 import { createTxRouter } from './routes/tx';
@@ -23,8 +24,9 @@ import { createRosettaMempoolRouter } from './routes/rosetta/mempool';
 import { createRosettaBlockRouter } from './routes/rosetta/block';
 import { createRosettaAccountRouter } from './routes/rosetta/account';
 import { createRosettaConstructionRouter } from './routes/rosetta/construction';
-import { isProdEnv, logger } from '../helpers';
+import { isProdEnv, logError, logger } from '../helpers';
 import { createWsRpcRouter } from './routes/ws-rpc';
+import { createSocketIORouter } from './routes/socket-io';
 import { createBurnchainRouter } from './routes/burnchain';
 import { createBnsNamespacesRouter } from './routes/bns/namespaces';
 import { createBnsPriceRouter } from './routes/bns/pricing';
@@ -41,6 +43,7 @@ export interface ApiServer {
   expressApp: ExpressWithAsync;
   server: Server;
   wss: WebSocket.Server;
+  io: SocketIO.Server;
   address: string;
   datastore: DataStore;
   terminate: () => Promise<void>;
@@ -227,10 +230,13 @@ export async function startApiServer(datastore: DataStore, chainId: ChainID): Pr
   const serverSockets = new Set<Socket>();
   server.on('connection', socket => {
     serverSockets.add(socket);
-    socket.on('close', () => {
+    socket.once('close', () => {
       serverSockets.delete(socket);
     });
   });
+
+  // Setup socket.io server
+  const io = createSocketIORouter(datastore, server);
 
   // Setup websockets RPC endpoint
   const wss = createWsRpcRouter(datastore, server);
@@ -249,27 +255,40 @@ export async function startApiServer(datastore: DataStore, chainId: ChainID): Pr
   });
 
   const terminate = async () => {
+    await new Promise<void>((resolve, reject) => {
+      logger.info('Closing Socket.io server...');
+      io.close(error => {
+        if (error) {
+          logError('Failed to gracefully close Socket.io server', error);
+          reject(error);
+        } else {
+          logger.info('API socket.io server closed.');
+          resolve();
+        }
+      });
+    });
+    await new Promise<void>((resolve, reject) => {
+      logger.info('Closing WebSocket server...');
+      wss.close(error => {
+        if (error) {
+          logError('Failed to gracefully close WebSocket server.');
+          reject(error);
+        } else {
+          logger.info('WebSocket server closed.');
+          resolve();
+        }
+      });
+    });
     for (const socket of serverSockets) {
       socket.destroy();
     }
-    await new Promise<void>((resolve, reject) =>
-      wss.close(error => {
-        if (error) {
-          reject(error);
-        } else {
-          resolve();
-        }
-      })
-    );
-    await new Promise<void>((resolve, reject) =>
-      server.close(error => {
-        if (error) {
-          reject(error);
-        } else {
-          resolve();
-        }
-      })
-    );
+    await new Promise<void>(resolve => {
+      logger.info('Closing API http server...');
+      server.close(() => {
+        logger.info('API http server closed.');
+        resolve();
+      });
+    });
   };
 
   const addr = server.address();
@@ -281,8 +300,9 @@ export async function startApiServer(datastore: DataStore, chainId: ChainID): Pr
     expressApp: app,
     server: server,
     wss: wss,
+    io: io,
     address: addrStr,
     datastore: datastore,
-    terminate,
+    terminate: terminate,
   };
 }

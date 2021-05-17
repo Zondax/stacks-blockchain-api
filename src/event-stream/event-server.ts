@@ -484,11 +484,9 @@ async function handleNewAttachmentMessage(msg: CoreNodeAttachmentMessage[], db: 
           // case for subdomain
           const subdomains: DbBnsSubdomain[] = [];
           for (let i = 0; i < zoneFileTxt.length; i++) {
-            if (!zoneFileContents.uri) {
-              throw new Error(`zone file contents missing URI: ${zonefile}`);
-            }
             const zoneFile = zoneFileTxt[i];
             const parsedTxt = parseZoneFileTxt(zoneFile.txt);
+            if (parsedTxt.owner === '') continue; //if txt has no owner , skip it
             const subdomain: DbBnsSubdomain = {
               name: name.concat('.', namespace),
               namespace_id: namespace,
@@ -504,7 +502,7 @@ async function handleNewAttachmentMessage(msg: CoreNodeAttachmentMessage[], db: 
               parent_zonefile_index: 0, //TODO need to figure out this field
               block_height: Number.parseInt(attachment.block_height, 10),
               zonefile_offset: 1,
-              resolver: parseResolver(zoneFileContents.uri),
+              resolver: zoneFileContents.uri ? parseResolver(zoneFileContents.uri) : '',
               atch_resolved: true,
             };
             subdomains.push(subdomain);
@@ -537,35 +535,40 @@ function createMessageProcessorQueue(): EventMessageHandler {
       return processorQueue
         .add(() => handleClientMessage(chainId, msg, db))
         .catch(e => {
-          logError(`Error processing core node block message`, e);
+          logError(`Error processing core node block message`, e, msg);
+          throw e;
         });
     },
     handleBurnBlock: (msg: CoreNodeBurnBlockMessage, db: DataStore) => {
       return processorQueue
         .add(() => handleBurnBlockMessage(msg, db))
         .catch(e => {
-          logError(`Error processing core node burn block message`, e);
+          logError(`Error processing core node burn block message`, e, msg);
+          throw e;
         });
     },
     handleMempoolTxs: (rawTxs: string[], db: DataStore) => {
       return processorQueue
         .add(() => handleMempoolTxsMessage(rawTxs, db))
         .catch(e => {
-          logError(`Error processing core node mempool message`, e);
+          logError(`Error processing core node mempool message`, e, rawTxs);
+          throw e;
         });
     },
     handleDroppedMempoolTxs: (msg: CoreNodeDropMempoolTxMessage, db: DataStore) => {
       return processorQueue
         .add(() => handleDroppedMempoolTxsMessage(msg, db))
         .catch(e => {
-          logError(`Error processing core node dropped mempool txs message`, e);
+          logError(`Error processing core node dropped mempool txs message`, e, msg);
+          throw e;
         });
     },
     handleNewAttachment: (msg: CoreNodeAttachmentMessage[], db: DataStore) => {
       return processorQueue
         .add(() => handleNewAttachmentMessage(msg, db))
         .catch(e => {
-          logError(`Error processing new attachment message`, e);
+          logError(`Error processing new attachment message`, e, msg);
+          throw e;
         });
     },
   };
