@@ -60,7 +60,6 @@ import {
   AddressTokenOfferingLocked,
   AddressUnlockSchedule,
   TransactionType,
-  AddressUnlockSchedule,
 } from '@stacks/stacks-blockchain-api-types';
 import { getTxTypeId } from '../api/controllers/db-controller';
 
