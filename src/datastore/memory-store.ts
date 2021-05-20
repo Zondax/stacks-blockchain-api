@@ -29,6 +29,7 @@ import {
   DbConfigState,
   DbMinerReward,
   DbTxWithStxTransfers,
+  StxUnlockEvent,
 } from './common';
 import { logger, FoundOrNot } from '../helpers';
 import { AddressTokenOfferingLocked, TransactionType } from '@stacks/stacks-blockchain-api-types';
@@ -604,6 +605,10 @@ export class MemoryDataStore
     address: string,
     blockHeight: number
   ): Promise<FoundOrNot<AddressTokenOfferingLocked>> {
+    throw new Error('Method not implemented');
+  }
+
+  getUnlockedAddressesAtBlock(burnBlockHeight: number): Promise<StxUnlockEvent[]> {
     throw new Error('Method not implemented');
   }
 
